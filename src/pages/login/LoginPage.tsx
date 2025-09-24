@@ -1,5 +1,10 @@
 import type { FC } from "react";
+import {LoginForm} from "@/pages/login/ui/LoginForm.tsx";
 
 export const LoginPage: FC = () => {
-    return <h1 className="text-black font-medium">Login Page</h1>;
+    return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-50">
+            <LoginForm />
+        </div>
+    );
 };
