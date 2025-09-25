@@ -1,10 +1,15 @@
 import {useState, type FC, type FormEvent,} from "react";
 import {useVerify2FAMutation} from "@/entities/user/api/useVerify2FAMutation.ts";
+import {useAuth} from "@/shared/auth/AuthContext.tsx";
+import {useNavigate} from "react-router-dom";
+import {queryClient} from "@/app/providers/queryClient.ts";
 
 export const TwoFactorPage: FC = () => {
     const [code, setCode] = useState<string[]>(Array(6).fill(""));
 
     const verify2FA = useVerify2FAMutation();
+    const { setAccessToken } = useAuth();
+    const navigate = useNavigate();
 
     const handleChange = (value: string, index: number) => {
         if (!/^[0-9]?$/.test(value)) return; // only numbers
@@ -23,15 +28,17 @@ export const TwoFactorPage: FC = () => {
         e.preventDefault();
         const fullCode = code.join("");
         if (fullCode.length === 6) {
-            verify2FA.mutate(fullCode, {
-                onSuccess: (data) => {
-                    localStorage.setItem("authToken", data.token);
-                    alert("2FA success!");
-                },
-                onError: (err) => {
-                    alert((err as Error).message);
-                },
-            });
+            verify2FA.mutate(
+                { code: fullCode },
+                {
+                    onSuccess: (data) => {
+                        console.log("2FA verified, token =", data);
+                        setAccessToken(data.token);
+                        queryClient.setQueryData(["authToken"], data.token);
+                        navigate("/dashboard");
+                    },
+                }
+            );
         }
     };
 

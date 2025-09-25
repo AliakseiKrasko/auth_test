@@ -1,10 +1,13 @@
 import {QueryProvider, RouterProvider} from "@/app/providers";
+import {AuthProvider} from "@/shared/auth/AuthContext.tsx";
 
 
 export const App = () => {
     return (
         <QueryProvider>
-            <RouterProvider />
+            <AuthProvider>
+                <RouterProvider />
+            </AuthProvider>
         </QueryProvider>
     );
 };

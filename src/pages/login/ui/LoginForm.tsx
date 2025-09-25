@@ -22,17 +22,8 @@ export const LoginForm: FC = () => {
             { email, password },
             {
                 onSuccess: (data) => {
-                    console.log("Login successful:", data);
-                    if ("requires2FA" in data && data.requires2FA) {
-                        // 🔹 редиректим на ввод кода
+                    if (data.requires2FA) {
                         navigate("/2fa");
-                        return;
-                    }
-
-                    if ("token" in data && data.token) {
-                        // 🔹 обычный вход
-                        localStorage.setItem("authToken", data.token);
-                        navigate("/dashboard");
                     }
                 },
                 onError: (error) => {
@@ -81,12 +72,6 @@ export const LoginForm: FC = () => {
                             className="ml-2 w-full outline-none text-gray-600"
                         />
                     </div>
-                    {/* Success message */}
-                    {loginMutation.isSuccess && (
-                        <p className="text-green-500 text-sm text-center">
-                            Успешно авторизованы! Токен: {loginMutation.data?.token}
-                        </p>
-                    )}
                     {/* Error */}
                     {loginMutation.isError && (
                         <p className="text-red-500 text-sm text-center">
