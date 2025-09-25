@@ -15,9 +15,19 @@ export const LoginForm: FC = () => {
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (!isFormValid) return;
-        loginMutation.mutate({ email, password });
-
-
+        loginMutation.mutate(
+            { email, password },
+            {
+                onSuccess: (data) => {
+                    console.log("Login successful:", data);
+                    // Здесь можно сохранить токен и перенаправить пользователя
+                    localStorage.setItem("authToken", data.token);
+                },
+                onError: (error) => {
+                    console.error("Login failed:", error);
+                },
+            }
+        );
     };
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -59,6 +69,12 @@ export const LoginForm: FC = () => {
                             className="ml-2 w-full outline-none text-gray-600"
                         />
                     </div>
+                    {/* Success message */}
+                    {loginMutation.isSuccess && (
+                        <p className="text-green-500 text-sm text-center">
+                            Успешно авторизованы! Токен: {loginMutation.data?.token}
+                        </p>
+                    )}
                     {/* Error */}
                     {loginMutation.isError && (
                         <p className="text-red-500 text-sm text-center">
