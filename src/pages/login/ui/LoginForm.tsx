@@ -1,6 +1,7 @@
 import {type FC, type FormEvent, useState} from "react";
 import {User, LockIcon } from "lucide-react";
 import {useLoginMutation} from "@/entities/user/api/useLoginMutation.ts";
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm: FC = () => {
     // Local form status
@@ -9,19 +10,30 @@ export const LoginForm: FC = () => {
 
 
     const loginMutation = useLoginMutation();
+    const navigate = useNavigate();
 
     const isFormValid = email.includes("@") && password.length >= 6;
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (!isFormValid) return;
+
         loginMutation.mutate(
             { email, password },
             {
                 onSuccess: (data) => {
                     console.log("Login successful:", data);
-                    // Здесь можно сохранить токен и перенаправить пользователя
-                    localStorage.setItem("authToken", data.token);
+                    if ("requires2FA" in data && data.requires2FA) {
+                        // 🔹 редиректим на ввод кода
+                        navigate("/2fa");
+                        return;
+                    }
+
+                    if ("token" in data && data.token) {
+                        // 🔹 обычный вход
+                        localStorage.setItem("authToken", data.token);
+                        navigate("/dashboard");
+                    }
                 },
                 onError: (error) => {
                     console.error("Login failed:", error);

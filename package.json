@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.90.2",
+    "@tanstack/react-query-devtools": "^5.90.2",
     "lucide-react": "^0.544.0",
     "msw": "^2.11.3",
     "react": "19.1.1",

@@ -7,13 +7,22 @@ export const handlers = [
         const { email, password } = body;
 
         if (email === "admin@test.com" && password === "123456") {
-            return HttpResponse.json({ token: "fake-jwt-token" }, { status: 200 });
+            return HttpResponse.json({ requires2FA: true }, { status: 200 });
         }
 
         return HttpResponse.json(
             { message: "Invalid email or password" },
             { status: 401 }
         );
+    }),
+    http.post("/api/verify-2fa", async ({ request }) => {
+        const { code } = (await request.json()) as { code: string };
+
+        if (code === "123456") {
+            return HttpResponse.json({ token: "fake-jwt-token" }, { status: 200 });
+        }
+
+        return HttpResponse.json({ message: "Invalid code" }, { status: 400 });
     }),
 
     // Server error
