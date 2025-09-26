@@ -6,8 +6,11 @@ import {queryClient} from "@/app/providers/queryClient.ts";
 import {ArrowLeft} from "lucide-react";
 
 export const TwoFactorPage: FC = () => {
+    // State for the 6-digit code input
     const [code, setCode] = useState<string[]>(Array(6).fill(""));
+    // Timer countdown in seconds
     const [timeLeft, setTimeLeft] = useState(45);
+    // Error message for invalid codes
     const [error, setError] = useState<string | null>(null);
 
     const verify2FA = useVerify2FAMutation();
@@ -17,7 +20,7 @@ export const TwoFactorPage: FC = () => {
     const fullCode = code.join("");
     const isCodeComplete = fullCode.length === 6;
 
-    // запуск таймера только если код ещё не введён полностью
+    // Timer only runs while code is incomplete and time > 0
     useEffect(() => {
         if (isCodeComplete || timeLeft <= 0) return;
 
@@ -29,13 +32,13 @@ export const TwoFactorPage: FC = () => {
     }, [timeLeft, isCodeComplete]);
 
     const handleChange = (value: string, index: number) => {
-        if (!/^[0-9]?$/.test(value)) return; // только цифры
+        if (!/^[0-9]?$/.test(value)) return; // Only digits allowed
         const newCode = [...code];
         newCode[index] = value;
         setCode(newCode);
-        setError(null);
+        setError(null); // Reset error on new input
 
-        // autofocus на следующий input
+        // Automatically focus the next input field after entering a digit
         if (value && index < code.length - 1) {
             const next = document.getElementById(`code-${index + 1}`);
             (next as HTMLInputElement)?.focus();
@@ -49,12 +52,13 @@ export const TwoFactorPage: FC = () => {
                 { code: fullCode },
                 {
                     onSuccess: (data) => {
-                        console.log("2FA verified, token =", data);
+                        // On success → store token in context and cache, then navigate
                         setAccessToken(data.accessToken);
                         queryClient.setQueryData(["authToken"], data.accessToken);
                         navigate("/dashboard");
                     },
                     onError: () => {
+                        // If 2FA fails, show error and disable "Continue"
                         setError("Invalid code");
                     },
                 }
@@ -63,13 +67,14 @@ export const TwoFactorPage: FC = () => {
     };
 
     const handleGetNewCode = () => {
-        console.log("Requesting new code...");
+        // Resets state and restarts the timer
         setCode(Array(6).fill("")); // очищаем поле
         setTimeLeft(45); // сброс таймера
         setError(null);
     };
 
     const formatTime = (seconds: number) => {
+        // Formats countdown as MM:SS
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
         return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
@@ -78,6 +83,7 @@ export const TwoFactorPage: FC = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50">
             <div className="w-full max-w-md bg-white shadow-md rounded-xl p-8 relative">
+                {/* Back button */}
                 <button
                     type="button"
                     onClick={() => navigate(-1)}
@@ -86,7 +92,7 @@ export const TwoFactorPage: FC = () => {
                     <ArrowLeft className="w-5 h-5 text-gray-800" />
                 </button>
 
-                {/* Лого */}
+                {/* Logo */}
                 <div className="flex flex-col items-center mb-6">
                     <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center">
                         <div className="w-3 h-3 rounded-full bg-white"></div>
@@ -94,7 +100,7 @@ export const TwoFactorPage: FC = () => {
                     <h1 className="mt-2 text-lg font-semibold text-gray-900">Company</h1>
                 </div>
 
-                {/* Заголовок */}
+                {/* Title */}
                 <h2 className="text-center text-2xl font-bold text-gray-900 mb-6">
                     Two-Factor Authentication
                 </h2>
@@ -102,7 +108,7 @@ export const TwoFactorPage: FC = () => {
                     Enter the 6-digit code from the Google Authenticator app
                 </p>
 
-                {/* Форма */}
+                {/* Form with 6 digit inputs */}
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="flex justify-between gap-2">
                         {code.map((digit, i) => (
@@ -122,7 +128,7 @@ export const TwoFactorPage: FC = () => {
                         <p className="text-red-500 text-sm text-start">{error}</p>
                     )}
 
-                    {/* Continue появляется только если введено 6 цифр */}
+                    {/* Countdown / Resend button disappears once code is complete */}
                     {isCodeComplete && (
                         <button
                             type="submit"
@@ -138,7 +144,7 @@ export const TwoFactorPage: FC = () => {
                     )}
                 </form>
 
-                {/* Таймер / кнопка Get new (пропадают если код введён полностью) */}
+                {/* Timer / Get new button (disappears when the code is entered completely) */}
                 {!isCodeComplete && (
                     <div className="text-center mt-6">
                         {timeLeft > 0 ? (

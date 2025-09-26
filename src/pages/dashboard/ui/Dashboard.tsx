@@ -1,4 +1,4 @@
-import { useAuth } from "@/shared/auth/AuthContext";
+import { useAuth } from "@/shared/auth/AuthContext.tsx";
 import {useNavigate} from "react-router-dom";
 
 export const Dashboard = () => {
@@ -6,7 +6,9 @@ export const Dashboard = () => {
     const navigate = useNavigate();
 
     const handleLogout = () => {
+        // Clear authentication state (tokens, user info)
         logout();
+        // Redirect user back to login page
         navigate("/");
     };
 

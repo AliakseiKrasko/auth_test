@@ -4,28 +4,32 @@ import {useLoginMutation} from "@/entities/user/api/useLoginMutation.ts";
 import { useNavigate } from "react-router-dom";
 
 export const LoginForm: FC = () => {
-    // Local form status
+    // Local form state for inputs
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
-
+    // React Query mutation for login API
     const loginMutation = useLoginMutation();
     const navigate = useNavigate();
 
+    // Simple client-side validation: must contain "@" and password ≥ 6 chars
     const isFormValid = email.includes("@") && password.length >= 6;
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (!isFormValid) return;
 
+        // Trigger login mutation with user credentials
         loginMutation.mutate(
             { email, password },
             {
+                // If backend requires 2FA → redirect user to /2fa page
                 onSuccess: (data) => {
                     if (data.requires2FA) {
                         navigate("/2fa");
                     }
                 },
+                // Handle login failure (wrong credentials, server error)
                 onError: (error) => {
                     console.error("Login failed:", error);
                 },
@@ -72,12 +76,13 @@ export const LoginForm: FC = () => {
                             className="ml-2 w-full outline-none text-gray-600"
                         />
                     </div>
-                    {/* Error */}
+                    {/* Error message shown if loginMutation fails */}
                     {loginMutation.isError && (
                         <p className="text-red-500 text-sm text-center">
                             {(loginMutation.error as Error).message}
                         </p>
                     )}
+                    {/* Submit button: disabled if form invalid or request in progress */}
                     <button
                         type="submit"
                         disabled={!isFormValid || loginMutation.isPending}
@@ -87,6 +92,7 @@ export const LoginForm: FC = () => {
                                 : "bg-blue-500 text-white hover:bg-blue-600"
                         }`}
                     >
+                        {/* Show loading state while waiting for API */}
                         {loginMutation.isPending ? "Logging in..." : "Log in"}
                     </button>
                 </form>

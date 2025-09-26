@@ -9,6 +9,8 @@ type Props = {
 
 export const QueryProvider = ({ children }: Props) => {
     return (
+        // Provides the React Query context to the entire component tree,
+        // enabling all hooks (useQuery, useMutation, etc.) to share the same QueryClient
         <QueryClientProvider client={queryClient}>
             {children}
             {/* Devtools */}

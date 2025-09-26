@@ -3,10 +3,11 @@ import Cookies from "js-cookie";
 const API_URL = "";
 
 export async function apiFetch(input: string, init?: RequestInit): Promise<Response> {
+    // Load tokens from cookies
     let accessToken: string | null = Cookies.get("accessToken") ?? null;
     const refreshToken: string | null = Cookies.get("refreshToken") ?? null;
 
-    // Если accessToken отсутствует, но refreshToken есть → пробуем обновить
+    // Case 1: No accessToken but refreshToken exists → try refreshing session
     if (!accessToken && refreshToken) {
         const refreshRes = await fetch(`/auth/refresh`, {
             method: "POST",
@@ -14,6 +15,7 @@ export async function apiFetch(input: string, init?: RequestInit): Promise<Respo
             body: JSON.stringify({ refreshToken }),
         });
 
+        // Store the new accessToken in cookies
         if (refreshRes.ok) {
             const data = await refreshRes.json();
             accessToken = data.accessToken ?? null;
@@ -21,22 +23,24 @@ export async function apiFetch(input: string, init?: RequestInit): Promise<Respo
                 Cookies.set("accessToken", accessToken, { expires: 1, secure: true });
             }
         } else {
+            // Both tokens invalid → clear session and force re-login
             Cookies.remove("accessToken");
             Cookies.remove("refreshToken");
             throw new Error("Session expired, please log in again.");
         }
     }
 
-    // Делаем основной запрос
+    // Prepare headers with the latest accessToken (if available)
     const headers: HeadersInit = {
         ...(init?.headers || {}),
         ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
         "Content-Type": "application/json",
     };
 
+    // Case 2: Perform the main request
     let response = await fetch(API_URL + input, { ...init, headers });
 
-    // Если токен протух прямо во время запроса → пробуем обновить
+    // Case 3: If server rejects with 401 (expired token), attempt refresh
     if (response.status === 401 && refreshToken) {
         const refreshRes = await fetch(`/auth/refresh`, {
             method: "POST",
@@ -45,6 +49,7 @@ export async function apiFetch(input: string, init?: RequestInit): Promise<Respo
         });
 
         if (refreshRes.ok) {
+            // Update accessToken and retry the original request
             const data = await refreshRes.json();
             accessToken = data.accessToken ?? null;
             if (accessToken) {
@@ -60,6 +65,7 @@ export async function apiFetch(input: string, init?: RequestInit): Promise<Respo
 
             response = await fetch(API_URL + input, { ...init, headers: retryHeaders });
         } else {
+            // Refresh failed → clear tokens and force logout
             Cookies.remove("accessToken");
             Cookies.remove("refreshToken");
             throw new Error("Session expired, please log in again.");
