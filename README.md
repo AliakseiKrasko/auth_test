@@ -38,6 +38,7 @@ Implement an authorization screen with support for two-factor authentication (2F
 ---
 
 ## 📂 Project Structure
+```bash
 src/
  ├─ app/              # Providers (Query, Router, Auth)
  ├─ entities/         # API hooks (React Query)
