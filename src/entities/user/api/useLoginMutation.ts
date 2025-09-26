@@ -1,4 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
+import { apiFetch } from "@/shared/api/apiClient";
 
 type LoginPayload = {
     email: string;
@@ -8,11 +9,10 @@ type LoginPayload = {
 type LoginResponse = { requires2FA: boolean };
 
 async function login(payload: LoginPayload): Promise<LoginResponse> {
-    const response = await fetch("/api/login", {
+    const response = await apiFetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-        credentials: "include",
     });
 
     if (!response.ok) {

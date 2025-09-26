@@ -33,8 +33,8 @@ export const TwoFactorPage: FC = () => {
                 {
                     onSuccess: (data) => {
                         console.log("2FA verified, token =", data);
-                        setAccessToken(data.token);
-                        queryClient.setQueryData(["authToken"], data.token);
+                        setAccessToken(data.accessToken);
+                        queryClient.setQueryData(["authToken"], data.accessToken);
                         navigate("/dashboard");
                     },
                 }
