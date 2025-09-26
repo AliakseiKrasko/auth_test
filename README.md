@@ -1,73 +1,146 @@
-# React + TypeScript + Vite
+🔐 Test Assignment – Authorization Screen
+📌 Task
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Implement an authorization screen with support for two-factor authentication (2FA) and proper handling of all API error states.
 
-Currently, two official plugins are available:
+Requirements
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Use React + TypeScript
 
-## React Compiler
+Use React Query for API communication
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+Use MSW (Mock Service Worker) for API mocking
 
-## Expanding the ESLint configuration
+Handle all error scenarios:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Invalid login
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Invalid password
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Invalid 2FA code
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Server errors
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+🚀 Functionality
+Login Screen
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Fields: email, password
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Form validation:
+
+Email must contain @
+
+Password must be at least 6 characters long
+
+On successful login → redirect to 2FA screen
+
+Errors are displayed under the form
+
+Two-Factor Authentication (2FA)
+
+Input for 6-digit code
+
+45-second timer before requesting a new code
+
+On successful verification → redirect to Dashboard
+
+Error handling: invalid code, timeout
+
+Dashboard
+
+Shown after successful authentication
+
+Displays a welcome message and a Logout button
+
+📂 Project Structure
+src/
+ ├─ app/              # Providers (Query, Router, Auth)
+ ├─ entities/         # API hooks (React Query)
+ ├─ pages/            # Pages (Login, 2FA, Dashboard)
+ ├─ shared/           # Utilities and contexts
+ ├─ mocks/            # MSW handlers and worker
+ └─ index.tsx         # Entry point
+
+🔑 Test Credentials
+
+Use the following credentials for testing:
+
+Email: admin@test.com
+
+Password: 123456
+
+2FA Code: 123456
+
+🛠️ Tech Stack
+
+⚛️ React 18
+
+🔧 TypeScript
+
+📦 React Query
+
+🧩 MSW (Mock Service Worker)
+
+🎨 TailwindCSS
+
+▶️ Getting Started
+
+Install dependencies:
+
+pnpm install
+
+
+Start the development server:
+
+pnpm dev
+
+
+Build the project:
+
+pnpm build
+
+
+Preview the build:
+
+pnpm preview
+
+
+The app will be available at:
+👉 http://localhost:5173
+
+⚠️ Error Scenarios
+
+The mocked API handles the following cases:
+
+❌ Invalid email/password → 401 Unauthorized
+
+❌ Invalid 2FA code → 400 Invalid code
+
+❌ Server error → 500 Internal Server Error
+
+❌ Network error → 503 Service Unavailable
+
+All errors are displayed properly in the UI.
+
+🎥 Demo (Screenshots / GIFs)
+
+Flow: Login → 2FA → Dashboard → Logout
+
+Login	2FA	Dashboard	Logout
+
+	
+	
+	
+
+Or a single GIF demo:
+
+
+✅ Result
+
+Fully working prototype with authentication flow
+
+All requests and errors are mocked with MSW
+
+User-friendly UX with timer and resend code feature
+
+Clean code structure with React Query integration
