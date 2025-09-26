@@ -1,4 +1,4 @@
-🔐 Test Assignment – Authorization Screen
+```🔐 Test Assignment – Authorization Screen
 📌 Task
 
 Implement an authorization screen with support for two-factor authentication (2FA) and proper handling of all API error states.
@@ -144,3 +144,4 @@ All requests and errors are mocked with MSW
 User-friendly UX with timer and resend code feature
 
 Clean code structure with React Query integration
+```
