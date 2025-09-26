@@ -50,7 +50,6 @@ src/
 
 Use the following credentials for testing:
 
-```bash
 Email:    admin@test.com
 Password: 123456
 2FA Code: 123456
