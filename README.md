@@ -1,4 +1,4 @@
-# 🔐 Test Assignment – Authorization Screen
+# 🔐 Test Assignment – Authorization 
 
 ## 📌 Task
 Implement an authorization screen with support for two-factor authentication (2FA) and proper handling of all API error states.
@@ -96,18 +96,6 @@ The mocked API handles the following cases:
 ❌ Network error → 503 Service Unavailable
 
 All errors are displayed properly in the UI.
-
-🎥 Demo (Screenshots / GIFs)
-
-Flow: Login → 2FA → Dashboard → Logout
-
-Login	2FA	Dashboard	Logout
-
-	
-	
-	
-
-Or a single GIF demo:
 
 ✅ Result
 
